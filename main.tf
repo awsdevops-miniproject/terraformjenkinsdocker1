@@ -43,46 +43,48 @@ resource "aws_instance" "devops_server" {
   ]
 
   user_data = <<-EOF
-    #!/bin/bash
+  #!/bin/bash
 
-    apt update -y
+  apt update -y
 
-    # Install Git
-    apt install -y git
+  # Install Git
+  apt install -y git
 
-    # Install Docker
-    apt install -y docker.io
-    systemctl enable docker
-    systemctl start docker
+  # Install Docker
+  apt install -y docker.io
+  systemctl enable docker
+  systemctl start docker
 
-    # Add Ubuntu user to Docker group
-    usermod -aG docker ubuntu
+  # Add Ubuntu user to Docker group
+  usermod -aG docker ubuntu
 
-    # Install Java 21
-    apt install -y fontconfig openjdk-21-jre
+  # Install Java 21
+  apt install -y fontconfig openjdk-21-jre
 
-    # Add Jenkins repository
-    mkdir -p /etc/apt/keyrings
+  # Add Jenkins repository
+  mkdir -p /etc/apt/keyrings
 
-    wget -O /etc/apt/keyrings/jenkins-keyring.asc \
-    https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+  wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
 
-    echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" \
-    > /etc/apt/sources.list.d/jenkins.list
+  echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" \
+  > /etc/apt/sources.list.d/jenkins.list
 
-    apt update -y
+  apt update -y
 
-    # Install Jenkins
-    apt install -y jenkins
+  # Install Jenkins
+  apt install -y jenkins
 
-    # Add Jenkins to Docker group
-    usermod -aG docker jenkins
+  # Add Jenkins to Docker group
+  usermod -aG docker jenkins
 
-    # Start Jenkins
-    systemctl enable jenkins
-    systemctl start jenkins
+  # Enable Jenkins
+  systemctl enable jenkins
 
-  EOF
+  # Restart Jenkins to load Docker group permission
+  systemctl restart jenkins
+
+EOF
 
   tags = {
     Name = "DevOps-Server"
